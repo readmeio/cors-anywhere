@@ -32,8 +32,19 @@ describe('memory usage', function() {
     // Uncomment this if you want to compare the performance of CORS Anywhere
     // with the standard no-op http module.
     // args.push('use-http-instead-of-cors-anywhere');
+    var nodeOptionsArgs = ['--expose-gc'];
+    var nodeMajorV = parseInt(process.versions.node, 10);
+    // Node 11.3.0+, 10.14.0+, 8.14.0+, 6.15.0+ restrict header sizes
+    // (CVE-2018-12121), and need to be passed the --max-http-header-size flag
+    // to not reject large headers.
+    if (nodeMajorV >= 11 ||
+        nodeMajorV === 10 ||
+        nodeMajorV === 8 ||
+        nodeMajorV === 6) {
+      nodeOptionsArgs.push('--max-http-header-size=60000');
+    }
     cors_anywhere_child = fork(cors_module_path, args, {
-      execArgv: ['--expose-gc'],
+      execArgv: nodeOptionsArgs,
     });
     cors_anywhere_child.once('message', function(cors_url) {
       cors_api_url = cors_url;
@@ -93,10 +104,7 @@ describe('memory usage', function() {
 
   it('100 GET requests 50k', function(done) {
     // This test is just for comparison with the following tests.
-    // On Node 0.10.x, the initial memory usage seems higher on Travis, so use
-    // a higher maximum value to avoid flaky tests.
-    var memMax = /^v0\./.test(process.version) ? 1200 : 550;
-    performNRequests(100, 50, memMax, done);
+    performNRequests(100, 50, 1200, done);
   });
 
   // 100x 1k and 100x 50k for comparison.

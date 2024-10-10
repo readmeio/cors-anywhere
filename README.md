@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/Rob--W/cors-anywhere.svg?branch=master)](https://travis-ci.org/Rob--W/cors-anywhere)
+[![Build Status](https://travis-ci.com/Rob--W/cors-anywhere.svg?branch=master)](https://travis-ci.com/Rob--W/cors-anywhere)
 [![Coverage Status](https://coveralls.io/repos/github/Rob--W/cors-anywhere/badge.svg?branch=master)](https://coveralls.io/github/Rob--W/cors-anywhere?branch=master)
 
 **CORS Anywhere** is a NodeJS proxy which adds CORS headers to the proxied request.
@@ -35,7 +35,7 @@ Request examples:
 * `http://localhost:8080/http://google.com/` - Google.com with CORS headers
 * `http://localhost:8080/google.com` - Same as previous.
 * `http://localhost:8080/google.com:443` - Proxies `https://google.com/`
-* `http://localhost:8080/` - Shows usage text, as defined in `libs/help.txt`
+* `http://localhost:8080/` - Shows usage text, as defined in `lib/help.txt`
 * `http://localhost:8080/favicon.ico` - Replies 404 Not found
 
 Live examples:
@@ -49,6 +49,9 @@ Live examples:
 
 To use the API, just prefix the URL with the API URL. Take a look at [demo.html](demo.html) for an example.
 A concise summary of the documentation is provided at [lib/help.txt](lib/help.txt).
+
+**Note: as of February 2021, access to the demo server requires an opt-in**,
+see: https://github.com/Rob--W/cors-anywhere/issues/301
 
 If you want to automatically enable cross-domain requests when needed, use the following snippet:
 
@@ -95,6 +98,10 @@ proxy requests. The following options are supported:
 * array of strings `originWhitelist` - If set, requests whose origin is not listed are blocked.  
   If this list is empty, all origins are allowed.
   Example: `['https://good.example.com', 'http://good.example.com']`
+* function `handleInitialRequest` - If set, it is called with the request, response and a parsed
+  URL of the requested destination (null if unavailable). If the function returns true, the request
+  will not be handled further. Then the function is responsible for handling the request.
+  This feature can be used to passively monitor requests, for example for logging (return false).
 * function `checkRateLimit` - If set, it is called with the origin (string) of the request. If this
   function returns a non-empty string, the request is rejected and the string is send to the client.
 * boolean `redirectSameOrigin` - If true, requests to URLs from the same origin will not be proxied but redirected.
@@ -107,6 +114,8 @@ proxy requests. The following options are supported:
   Example: `["cookie"]`
 * dictionary of lowercase strings `setHeaders` - Set headers for the request (overwrites existing ones).  
   Example: `{"x-powered-by": "CORS Anywhere"}`
+* number `corsMaxAge` - If set, an Access-Control-Max-Age request header with this value (in seconds) will be added.  
+  Example: `600` - Allow CORS preflight request to be cached by the browser for 10 minutes.
 * string `helpFile` - Set the help file (shown at the homepage).  
   Example: `"myCustomHelpText.txt"`
 
@@ -127,6 +136,9 @@ A public demo of CORS Anywhere is available at https://cors-anywhere.herokuapp.c
 only provided so that you can easily and quickly try out CORS Anywhere. To ensure that the service
 stays available to everyone, the number of requests per period is limited, except for requests from
 some explicitly whitelisted origins.
+
+**Note: as of February 2021, access to the demo server requires an opt-in**,
+see: https://github.com/Rob--W/cors-anywhere/issues/301
 
 If you expect lots of traffic, please host your own instance of CORS Anywhere, and make sure that
 the CORS Anywhere server only whitelists your site to prevent others from using your instance of
@@ -158,7 +170,7 @@ node server.js
 
 ## License
 
-Copyright (C) 2013 - 2016 Rob Wu <rob@robwu.nl>
+Copyright (C) 2013 - 2021 Rob Wu <rob@robwu.nl>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
